@@ -2,6 +2,7 @@ package com.jordancuker.thevoid;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,15 +11,22 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     SQLiteDatabase sqLiteDatabase;
     SharedPreferences sharedPreferences; //used to determine first launch
+    ArrayList<Void> allVoids;
+    VoidAdapter adapter;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +52,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        allVoids = new ArrayList<>();
 
 
         sharedPreferences = getSharedPreferences("com.jordancuker.thevoid", MODE_PRIVATE);
@@ -56,6 +64,9 @@ public class MainActivity extends AppCompatActivity
                     "  );\n");
             sharedPreferences.edit().putBoolean("first_run",false).apply();
             showFirstRunHelp();
+        }
+        else{
+            setUpRecyclerView();
         }
 
 
@@ -90,18 +101,10 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.ambient_noise) {
+            Intent intent = new Intent(getApplicationContext(), AmbientNoise.class);
+            startActivity(intent);
+            //overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -111,5 +114,18 @@ public class MainActivity extends AppCompatActivity
 
     public void showFirstRunHelp(){
 
+    }
+
+    public void setUpRecyclerView(){
+        recyclerView = (RecyclerView) findViewById(R.id.void_composer_root_layout);
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM TheVoid",null);
+        cursor.moveToFirst();
+        for(int i = 0; i < cursor.getCount();i++){
+            Void builder = new Void();
+            builder.setText(cursor.getString(i));
+            builder.setTimeCreated(cursor.getLong(i));
+            allVoids.add(builder);
+        }
+        Log.i("test",allVoids.toString());
     }
 }

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="3">
+
+     <ImageView
+         android:id="@+id/ocean_noise"
+         android:layout_width="0dp"
+         android:layout_height="wrap_content"
+         android:layout_weight="1"
+         app:srcCompat="@drawable/ic_ocean"
+         android:onClick="iconClick"
+         android:alpha=".5"
+         android:layout_marginLeft="24dp"
+         android:layout_marginStart="24dp"
+         app:layout_constraintLeft_toLeftOf="parent"
+         app:layout_constraintTop_toTopOf="parent"
+         android:layout_marginTop="16dp" />
+
+     <SeekBar
+         android:id="@+id/ocean_seekbar"
+         android:layout_width="70dp"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="0dp"
+         app:layout_constraintTop_toBottomOf="@+id/ocean_noise"
+         app:layout_constraintLeft_toLeftOf="parent"
+         android:layout_marginLeft="24dp"
+         android:layout_marginStart="24dp"/>
+
+     <ImageView
+         android:id="@+id/fire_noise"
+         android:alpha=".5"
+         android:layout_width="0dp"
+         android:layout_height="wrap_content"
+         app:srcCompat="@drawable/ic_fire"
+         android:layout_weight="1"
+         android:clickable="true"
+         android:onClick="iconClick"
+         app:layout_constraintTop_toTopOf="@+id/ocean_noise"
+         android:layout_marginTop="0dp"
+         app:layout_constraintLeft_toRightOf="@+id/ocean_noise"
+         android:layout_marginLeft="32dp"
+         app:layout_constraintRight_toLeftOf="@+id/train_noise"
+         android:layout_marginRight="32dp"
+         app:layout_constraintHorizontal_bias="0.0" />
+
+    <SeekBar
+        android:id="@+id/fire_seekbar"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintLeft_toRightOf="@+id/ocean_seekbar"
+        app:layout_constraintRight_toLeftOf="@+id/train_seekbar"
+        app:layout_constraintTop_toBottomOf="@+id/fire_noise" />
+
+    <ImageView
+        android:id="@+id/train_noise"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/fire_noise"
+        android:clickable="true"
+        android:onClick="iconClick"
+        android:alpha=".5"
+        app:srcCompat="@drawable/ic_train" />
+
+    <SeekBar
+        android:id="@+id/train_seekbar"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/train_noise"
+        android:layout_marginRight="24dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintRight_toRightOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>

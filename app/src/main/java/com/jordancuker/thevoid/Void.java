@@ -29,4 +29,9 @@ class Void {
     public void setTimeCreated(long timeCreated) {
         this.timeCreated = timeCreated;
     }
+
+    long getRemainingTime(){
+        long currentTime = System.currentTimeMillis();
+        return currentTime - timeCreated;
+    }
 }
