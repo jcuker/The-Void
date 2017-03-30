@@ -1,6 +1,9 @@
 package com.jordancuker.thevoid;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,8 +35,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -61,13 +64,16 @@ public class MainActivity extends AppCompatActivity
             sqLiteDatabase.execSQL("CREATE TABLE TheVoid (\n" +
                     "  CONTENT\t\tTEXT\tNOT NULL,\n" +
                     "  DATE_CREATED\tBIGINT\tNOT NULL\n" +
-                    "  );\n");
+                    "  )\n");
             sharedPreferences.edit().putBoolean("first_run",false).apply();
             showFirstRunHelp();
         }
         else{
             setUpRecyclerView();
         }
+
+
+
 
 
 
@@ -82,6 +88,25 @@ public class MainActivity extends AppCompatActivity
 
 
 
+    }
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finishAffinity();
+        }
+    };
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("close_app");
+        registerReceiver(mReceiver,filter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -105,6 +130,10 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(getApplicationContext(), AmbientNoise.class);
             startActivity(intent);
             //overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+        }
+        else if (id==R.id.about){
+            Intent intent = new Intent(getApplicationContext(), AboutActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

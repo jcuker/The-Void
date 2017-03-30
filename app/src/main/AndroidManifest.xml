@@ -13,6 +13,8 @@
         >
         <activity android:name=".VoidComposer"/>
         <activity android:name=".AmbientNoise"/>
+
+        <activity android:name=".AboutActivity"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

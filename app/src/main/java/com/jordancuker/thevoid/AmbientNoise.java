@@ -3,11 +3,15 @@ package com.jordancuker.thevoid;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -26,25 +30,32 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
 
     AudioManager audioManager;
     HashMap<String, MediaPlayer> musicMap;
-    SeekBar fireSeek, oceanSeek, trainSeek;
+    SeekBar fireSeek, oceanSeek, trainSeek, librarySeek, windSeek, whiteSeek;
     private int runningAudio = 0; //if > 0, audio is running and notification should be displayed
 
     NotificationCompat.Builder mBuilder;
     Intent resultIntent;
     TaskStackBuilder stackBuilder;
+    IntentFilter filter;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ambient_noise_content);
+        setContentView(R.layout.ambient_noise_activity);
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
 
-        musicMap = new HashMap<>();
-        musicMap.put("fire", MediaPlayer.create(this, R.raw.fire));
-        musicMap.put("ocean", MediaPlayer.create(this,R.raw.ocean));
-        musicMap.put("train", MediaPlayer.create(this, R.raw.train));
+        SharedPreferences sharedPreferences = getSharedPreferences("com.jordancuker.thevoid", MODE_PRIVATE);
+        if(!audioManager.isMusicActive()){
+            musicMap = new HashMap<>();
+            musicMap.put("fire", MediaPlayer.create(this, R.raw.fire));
+            musicMap.put("ocean", MediaPlayer.create(this, R.raw.ocean));
+            musicMap.put("library", MediaPlayer.create(this, R.raw.library));
+            musicMap.put("train", MediaPlayer.create(this, R.raw.train));
+            musicMap.put("wind", MediaPlayer.create(this, R.raw.wind));
+            musicMap.put("white", MediaPlayer.create(this, R.raw.white_noise));
+        }
 
         //handle seekbars
         fireSeek = (SeekBar)findViewById(R.id.fire_seekbar);
@@ -105,28 +116,137 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        librarySeek = (SeekBar)findViewById(R.id.library_seekbar);
+        librarySeek.setProgress(50);
+        librarySeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                final float vol = calcVol(progress);
+                musicMap.get("library").setVolume(vol,vol);
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        windSeek = (SeekBar) findViewById(R.id.wind_seekbar);
+        windSeek.setProgress(50);
+        windSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                final float vol = calcVol(progress);
+                musicMap.get("wind").setVolume(vol,vol);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        whiteSeek = (SeekBar) findViewById(R.id.white_seekbar);
+        whiteSeek.setProgress(50);
+        whiteSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                final float vol = calcVol(progress);
+                musicMap.get("white").setVolume(vol,vol);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        //nav menu
 
         //notif
-        mBuilder = new NotificationCompat.Builder(this);
+
+   /*     mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mBuilder.setContentTitle("Ambient noise is playing audio.");
-        mBuilder.setContentText("Tap here to return to the app.");
+        mBuilder.setContentText("Tap here to kill service.");
         resultIntent = new Intent(this, AmbientNoise.class);
         stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(AmbientNoise.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
+        mBuilder.setContentIntent(resultPendingIntent);*/
 
 
-        /*//probably wrong but oh well
-        SharedPreferences sharedPreferences = getSharedPreferences("com.jordancuker.thevoid",MODE_PRIVATE);
-        if(sharedPreferences.getBoolean("firePlaying",false)) fireSeek.setVisibility(View.VISIBLE);
-        if(sharedPreferences.getBoolean("trainPlaying",false)) trainSeek.setVisibility(View.VISIBLE);
-        if(sharedPreferences.getBoolean("oceanPlaying",false)) oceanSeek.setVisibility(View.VISIBLE);*/
+        Intent intent = new Intent("close_app");
+        PendingIntent pIntent = PendingIntent.getBroadcast(this,0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        filter = new IntentFilter("close_app");
+        registerReceiver(mReceiver,filter);
+        mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        mBuilder.setContentTitle("Ambient Noise is playing audio.");
+        mBuilder.setContentText("Tap here to kill the service.");
+        mBuilder.setContentIntent(pIntent);
+    }
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            endAudio();
+            finishAffinity();
+        }
+    };
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+
+
+    public void endAudio(){
+        musicMap.get("train").stop();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        //outState.putSerializable("starttime", startTime);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(musicMap == null) return;
+        if(musicMap.containsKey("fire") && musicMap.get("fire").isPlaying()) findViewById(R.id.fire_noise).setAlpha(1);
+        else musicMap.put("fire", MediaPlayer.create(getApplicationContext(), R.raw.fire));
+        if(musicMap.containsKey("ocean") && musicMap.get("ocean").isPlaying()) findViewById(R.id.ocean_noise).setAlpha(1);
+        else musicMap.put("ocean", MediaPlayer.create(getApplicationContext(), R.raw.ocean));
+        if(musicMap.containsKey("train") && musicMap.get("train").isPlaying()) findViewById(R.id.train_noise).setAlpha(1);
+        else musicMap.put("train", MediaPlayer.create(getApplicationContext(), R.raw.train));
+        if(musicMap.containsKey("library") && musicMap.get("library").isPlaying()) findViewById(R.id.library_noise).setAlpha(1);
+        else musicMap.put("library", MediaPlayer.create(getApplicationContext(), R.raw.library));
+        if(musicMap.containsKey("wind") && musicMap.get("wind").isPlaying()) findViewById(R.id.wind_noise).setAlpha(1);
+        else musicMap.put("wind", MediaPlayer.create(getApplicationContext(), R.raw.wind));
+        if(musicMap.containsKey("white") && musicMap.get("white").isPlaying()) findViewById(R.id.white_noise).setAlpha(1);
+        else musicMap.put("white", MediaPlayer.create(getApplicationContext(), R.raw.white_noise));
+    }
 
     public float calcVol(int progress){
         return  (float) (1 - (Math.log(MAX_VOLUME - progress) / Math.log(MAX_VOLUME)));
@@ -141,6 +261,10 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             //overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+        }
+        else if(id == R.id.about){
+            Intent intent = new Intent(getApplicationContext(), AboutActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -206,8 +330,65 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
                     runningAudio++;
                 }
                 break;
+
+            case R.id.library_noise:
+                if(musicMap.get("library").isPlaying()){
+                    musicMap.get("library").stop();
+                    findViewById(R.id.library_noise).setAlpha(.5f);
+                    runningAudio--;
+                }
+                else{
+                    musicMap.remove("library");
+                    musicMap.put("library",MediaPlayer.create(this, R.raw.library));
+                    float vol = calcVol(50);
+                    musicMap.get("library").setVolume(vol,vol);
+                    musicMap.get("library").setLooping(true);
+                    musicMap.get("library").start();
+                    librarySeek.setProgress(50);
+                    findViewById(R.id.library_noise).setAlpha(1f);
+                    runningAudio++;
+                }
+                break;
+
+            case R.id.wind_noise:
+                if(musicMap.get("wind").isPlaying()){
+                    musicMap.get("wind").stop();
+                    findViewById(R.id.wind_noise).setAlpha(.5f);
+                    runningAudio--;
+                }
+                else{
+                    musicMap.remove("wind");
+                    musicMap.put("wind",MediaPlayer.create(this, R.raw.wind));
+                    float vol = calcVol(50);
+                    musicMap.get("wind").setVolume(vol,vol);
+                    musicMap.get("wind").setLooping(true);
+                    musicMap.get("wind").start();
+                    windSeek.setProgress(50);
+                    findViewById(R.id.wind_noise).setAlpha(1f);
+                    runningAudio++;
+                }
+                break;
+
+            case R.id.white_noise:
+                if(musicMap.get("white").isPlaying()){
+                    musicMap.get("white").stop();
+                    findViewById(R.id.white_noise).setAlpha(.5f);
+                    runningAudio--;
+                }
+                else{
+                    musicMap.remove("white");
+                    musicMap.put("white", MediaPlayer.create(this, R.raw.white_noise));
+                    float vol = calcVol(50);
+                    musicMap.get("white").setVolume(vol,vol);
+                    musicMap.get("white").setLooping(true);
+                    musicMap.get("white").start();
+                    whiteSeek.setProgress(50);
+                    findViewById(R.id.white_noise).setAlpha(1f);
+                    runningAudio++;
+                }
+                break;
         }
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);;
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if(runningAudio == 0){
             mNotificationManager.cancel(1);
         }
@@ -216,25 +397,10 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
-
-   /* @Override
-    protected void onPause() {
-        super.onPause();
-        SharedPreferences sharedPreferences = getSharedPreferences("com.jordancuker.thevoid",MODE_PRIVATE);
-        sharedPreferences.edit().putBoolean("firePlaying",musicMap.get("fire").isPlaying())
-                .putBoolean("trainPlaying",musicMap.get("train").isPlaying())
-                .putBoolean("oceanPlaying",musicMap.get("ocean").isPlaying())
-                .apply();
-    }
-
     @Override
-    protected void onStop() {
-        super.onStop();
-        SharedPreferences sharedPreferences = getSharedPreferences("com.jordancuker.thevoid",MODE_PRIVATE);
-        sharedPreferences.edit().putBoolean("firePlaying",musicMap.get("fire").isPlaying())
-                .putBoolean("trainPlaying",musicMap.get("train").isPlaying())
-                .putBoolean("oceanPlaying",musicMap.get("ocean").isPlaying())
-                .apply();
-    }*/
+    protected void onDestroy() {
+        super.onDestroy();
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(1);
+    }
 }
