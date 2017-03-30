@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/fire_noise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        app:srcCompat="@drawable/ic_fire"
+        android:alpha=".5"
+        android:clickable="true"
+        android:onClick="iconClick"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="35dp"
+        android:layout_marginBottom="0dp"/>
+
+    <ImageView
+        android:id="@+id/ocean_noise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        app:srcCompat="@drawable/ic_ocean"
+        android:alpha=".5"
+        android:clickable="true"
+        android:onClick="iconClick"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginBottom="0dp"/>
+
+    <SeekBar
+        android:id="@+id/fire_seekbar"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fire_noise"
+        android:layout_alignLeft="@+id/fire_noise"
+        android:layout_alignStart="@+id/fire_noise" />
+
+    <SeekBar
+        android:id="@+id/ocean_seekbar"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ocean_noise"
+        android:layout_alignLeft="@+id/ocean_noise"
+        android:layout_alignStart="@+id/ocean_noise" />
+
+    <ImageView
+        android:id="@+id/library_noise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/library_seekbar"
+        android:layout_alignLeft="@+id/library_seekbar"
+        android:layout_alignStart="@+id/library_seekbar"
+        android:alpha=".5"
+        android:clickable="true"
+        android:onClick="iconClick"
+        app:srcCompat="@drawable/ic_library" />
+
+    <ImageView
+        android:id="@+id/train_noise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_train"
+        android:alpha=".5"
+        android:clickable="true"
+        android:onClick="iconClick"
+        android:layout_above="@+id/train_seekbar"
+        android:layout_alignLeft="@+id/white_seekbar"
+        android:layout_alignStart="@+id/white_seekbar" />
+
+    <SeekBar
+        android:id="@+id/library_seekbar"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/fire_seekbar"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/fire_seekbar"
+        android:layout_marginBottom="125dp"/>
+
+    <SeekBar
+        android:id="@+id/train_seekbar"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/library_noise"
+        android:layout_alignLeft="@+id/train_noise"
+        android:layout_alignStart="@+id/train_noise" />
+
+    <ImageView
+        android:id="@+id/wind_noise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_wind"
+        android:alpha=".5"
+        android:clickable="true"
+        android:onClick="iconClick"
+        android:layout_below="@+id/fire_seekbar"
+        android:layout_alignLeft="@+id/fire_seekbar"
+        android:layout_alignStart="@+id/fire_seekbar"
+        android:layout_marginTop="125dp" />
+
+    <ImageView
+        android:id="@+id/white_noise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_white_noise"
+        android:alpha=".5"
+        android:clickable="true"
+        android:onClick="iconClick"
+        android:layout_alignTop="@+id/wind_noise"
+        android:layout_alignLeft="@+id/ocean_seekbar"
+        android:layout_alignStart="@+id/ocean_seekbar" />
+
+    <SeekBar
+        android:id="@+id/wind_seekbar"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/wind_noise"
+        android:layout_alignStart="@+id/wind_noise"
+        android:layout_below="@+id/wind_noise" />
+
+    <SeekBar
+        android:id="@+id/white_seekbar"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/white_noise"
+        android:layout_alignLeft="@+id/white_noise"
+        android:layout_alignStart="@+id/white_noise" />
+</RelativeLayout>

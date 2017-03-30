@@ -2,12 +2,10 @@ package com.jordancuker.thevoid;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -34,8 +32,6 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
     private int runningAudio = 0; //if > 0, audio is running and notification should be displayed
 
     NotificationCompat.Builder mBuilder;
-    Intent resultIntent;
-    TaskStackBuilder stackBuilder;
     IntentFilter filter;
 
 
@@ -46,7 +42,6 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
 
-        SharedPreferences sharedPreferences = getSharedPreferences("com.jordancuker.thevoid", MODE_PRIVATE);
         if(!audioManager.isMusicActive()){
             musicMap = new HashMap<>();
             musicMap.put("fire", MediaPlayer.create(this, R.raw.fire));
@@ -222,6 +217,11 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
 
     public void endAudio(){
         musicMap.get("train").stop();
+        musicMap.get("fire").stop();
+        musicMap.get("ocean").stop();
+        musicMap.get("library").stop();
+        musicMap.get("wind").stop();
+        musicMap.get("white").stop();
     }
 
     @Override

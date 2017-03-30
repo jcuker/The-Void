@@ -1,9 +1,6 @@
 package com.jordancuker.thevoid;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -89,25 +86,7 @@ public class MainActivity extends AppCompatActivity
 
 
     }
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            finishAffinity();
-        }
-    };
-    @Override
-    protected void onStart() {
-        super.onStart();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("close_app");
-        registerReceiver(mReceiver,filter);
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(mReceiver);
-    }
 
     @Override
     public void onBackPressed() {
