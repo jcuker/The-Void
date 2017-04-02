@@ -36,7 +36,7 @@ public class VoidAdapter extends RecyclerView.Adapter<VoidAdapter.MyViewHolder> 
         int minutes = (int) ((millisLeft / (1000*60)));
         int hours   = (int) ((millisLeft / (1000*60*60)));
         if(current.isLocked()){
-            if(hours != 0)  holder.remainingTime.setText(String.valueOf(current.getRemainingTime(1) /60) + "h");
+            if(hours != 0)  holder.remainingTime.setText(String.valueOf(current.getRemainingTime(1)) + "h");
 
             holder.lock.setImageResource(R.drawable.lock);
         }

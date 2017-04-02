@@ -1,5 +1,6 @@
 package com.jordancuker.thevoid;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -134,38 +135,49 @@ public class MainActivity extends AppCompatActivity
                 temp.setTimeCreated(cursor.getLong(3));
                 temp.setMood(cursor.getInt(1));
                 allVoids.add(temp);
+                System.out.println(temp.getDatabaseID());
                 cursor.moveToNext();
             }
         }
+        allVoids.get(0).setTimeCreated(allVoids.get(0).getRemainingTime(0) - 86400000);
         Log.i("test",allVoids.toString());
         adapter = new VoidAdapter(getApplicationContext(),allVoids);
         adapter.setOnItemClickListener(new VoidAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                Toast.makeText(getApplication(),"testShort",Toast.LENGTH_LONG).show();
+
+                if(allVoids.get(position).isLocked()) {
+                    Toast.makeText(getApplicationContext(),"Still locked. Try again in " + allVoids.get(position).getRemainingTime(1) + " hours.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                else {
+                    Dialog dialog = new Dialog(MainActivity.this, R.style.myDialog);
+                    dialog.setContentView(R.layout.unlocked_void_dialog);
+                    dialog.show();
+                }
                 /*
                 Intent tweetIntent = new Intent(Intent.ACTION_SEND);
-tweetIntent.putExtra(Intent.EXTRA_TEXT, "This is a Test.");
-tweetIntent.setType("text/plain");
+                tweetIntent.putExtra(Intent.EXTRA_TEXT, "This is a Test.");
+                tweetIntent.setType("text/plain");
 
-PackageManager packManager = getPackageManager();
-List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,  PackageManager.MATCH_DEFAULT_ONLY);
+                PackageManager packManager = getPackageManager();
+                List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,  PackageManager.MATCH_DEFAULT_ONLY);
 
-boolean resolved = false;
-for(ResolveInfo resolveInfo: resolvedInfoList){
-    if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")){
-        tweetIntent.setClassName(
-            resolveInfo.activityInfo.packageName,
-            resolveInfo.activityInfo.name );
-        resolved = true;
-        break;
-    }
-}
-if(resolved){
-    startActivity(tweetIntent);
-}else{
-    Toast.makeText(this, "Twitter app isn't found", Toast.LENGTH_LONG).show();
-}
+                boolean resolved = false;
+                for(ResolveInfo resolveInfo: resolvedInfoList){
+                    if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")){
+                        tweetIntent.setClassName(
+                            resolveInfo.activityInfo.packageName,
+                            resolveInfo.activityInfo.name );
+                        resolved = true;
+                        break;
+                    }
+                }
+                if(resolved){
+                    startActivity(tweetIntent);
+                }else{
+                    Toast.makeText(this, "Twitter app isn't found", Toast.LENGTH_LONG).show();
+                }
                  */
             }
 
