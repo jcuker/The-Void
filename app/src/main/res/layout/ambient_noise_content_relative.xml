@@ -15,7 +15,7 @@
         android:alpha=".5"
         android:clickable="true"
         android:onClick="iconClick"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="75dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="35dp"
         android:layout_marginBottom="0dp"/>
@@ -31,7 +31,7 @@
         android:alpha=".5"
         android:clickable="true"
         android:onClick="iconClick"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="75dp"
         android:layout_marginLeft="35dp"
         android:layout_marginRight="50dp"
         android:layout_marginBottom="0dp"/>
@@ -107,16 +107,17 @@
         android:layout_marginTop="125dp" />
 
     <ImageView
-        android:id="@+id/white_noise"
+        android:id="@+id/cafe_noise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_white_noise"
+        android:layout_alignLeft="@+id/ocean_seekbar"
+        android:layout_alignStart="@+id/ocean_seekbar"
+        android:layout_alignTop="@+id/wind_noise"
         android:alpha=".5"
         android:clickable="true"
         android:onClick="iconClick"
-        android:layout_alignTop="@+id/wind_noise"
-        android:layout_alignLeft="@+id/ocean_seekbar"
-        android:layout_alignStart="@+id/ocean_seekbar" />
+        android:layout_marginBottom="1dp"
+        app:srcCompat="@drawable/ic_java" />
 
     <SeekBar
         android:id="@+id/wind_seekbar"
@@ -130,7 +131,7 @@
         android:id="@+id/white_seekbar"
         android:layout_width="70dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/white_noise"
-        android:layout_alignLeft="@+id/white_noise"
-        android:layout_alignStart="@+id/white_noise" />
+        android:layout_below="@+id/cafe_noise"
+        android:layout_alignLeft="@+id/cafe_noise"
+        android:layout_alignStart="@+id/cafe_noise" />
 </RelativeLayout>

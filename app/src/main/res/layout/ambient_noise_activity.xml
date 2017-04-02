@@ -9,7 +9,7 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/ambient_noise_content_relative"
+        layout="@layout/app_bar_ambient_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

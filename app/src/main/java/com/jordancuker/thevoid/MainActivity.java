@@ -1,5 +1,6 @@
 package com.jordancuker.thevoid;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -10,12 +11,17 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -57,36 +63,25 @@ public class MainActivity extends AppCompatActivity
 
         sharedPreferences = getSharedPreferences("com.jordancuker.thevoid", MODE_PRIVATE);
         sqLiteDatabase = openOrCreateDatabase("TheVoid",MODE_PRIVATE,null);
-        if(sharedPreferences.getBoolean("first_run",true)){
-            sqLiteDatabase.execSQL("CREATE TABLE TheVoid (\n" +
-                    "  CONTENT\t\tTEXT\tNOT NULL,\n" +
-                    "  DATE_CREATED\tBIGINT\tNOT NULL\n" +
-                    "  )\n");
-            sharedPreferences.edit().putBoolean("first_run",false).apply();
-            showFirstRunHelp();
-        }
-        else{
-            setUpRecyclerView();
-        }
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS TheVoid (" +
+                "  ID INT NOT NULL, " +
+                "  MOOD INT NOT NULL, " +
+                "  CONTENT TEXT NOT NULL, " +
+                "  DATE_CREATED BIGINT NOT NULL, " +
+                "  PRIMARY KEY(ID) " +
+                "  )");
 
-
-
-
-
-
-        /*
-        DATABASE SCHEMA:
-        TABLE TheVoid(
-                CONTENT     TEXT   NOT NULL
-                DATE_CREATED    BIGINT  NOT NULL
-                );
-         */
 
 
 
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setUpRecyclerView();
+    }
 
     @Override
     public void onBackPressed() {
@@ -108,7 +103,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.ambient_noise) {
             Intent intent = new Intent(getApplicationContext(), AmbientNoise.class);
             startActivity(intent);
-            //overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+            overridePendingTransition(0,0);
         }
         else if (id==R.id.about){
             Intent intent = new Intent(getApplicationContext(), AboutActivity.class);
@@ -125,15 +120,85 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void setUpRecyclerView(){
-        recyclerView = (RecyclerView) findViewById(R.id.void_composer_root_layout);
+        recyclerView = (RecyclerView) findViewById(R.id.void_viewer);
+        if (recyclerView.getChildCount() != 0) return;
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM TheVoid",null);
-        cursor.moveToFirst();
-        for(int i = 0; i < cursor.getCount();i++){
-            Void builder = new Void();
-            builder.setText(cursor.getString(i));
-            builder.setTimeCreated(cursor.getLong(i));
-            allVoids.add(builder);
+        if(cursor.getColumnCount() == 0) {
+            //show null
+        }
+        else{
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                Void temp = new Void();
+                temp.setText(cursor.getString(2));
+                temp.setTimeCreated(cursor.getLong(3));
+                temp.setMood(cursor.getInt(1));
+                allVoids.add(temp);
+                cursor.moveToNext();
+            }
         }
         Log.i("test",allVoids.toString());
+        adapter = new VoidAdapter(getApplicationContext(),allVoids);
+        adapter.setOnItemClickListener(new VoidAdapter.ClickListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+                Toast.makeText(getApplication(),"testShort",Toast.LENGTH_LONG).show();
+                /*
+                Intent tweetIntent = new Intent(Intent.ACTION_SEND);
+tweetIntent.putExtra(Intent.EXTRA_TEXT, "This is a Test.");
+tweetIntent.setType("text/plain");
+
+PackageManager packManager = getPackageManager();
+List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,  PackageManager.MATCH_DEFAULT_ONLY);
+
+boolean resolved = false;
+for(ResolveInfo resolveInfo: resolvedInfoList){
+    if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")){
+        tweetIntent.setClassName(
+            resolveInfo.activityInfo.packageName,
+            resolveInfo.activityInfo.name );
+        resolved = true;
+        break;
+    }
+}
+if(resolved){
+    startActivity(tweetIntent);
+}else{
+    Toast.makeText(this, "Twitter app isn't found", Toast.LENGTH_LONG).show();
+}
+                 */
+            }
+
+            @Override
+            public void onItemLongClick(int position, View v) {
+                Toast.makeText(getApplication(),"testLong",Toast.LENGTH_LONG).show();
+                final int i = position;
+                if(!allVoids.get(position).isLocked()){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.myDialog));
+                    builder.setTitle("test1");
+                    builder.setMessage("test2");
+                    builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            removeEntry(allVoids.get(i).getDatabaseID());
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+
+            }
+        });
+        recyclerView.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                layoutManager.getOrientation());
+        recyclerView.addItemDecoration(dividerItemDecoration);
+        cursor.close();
+    }
+
+    public void removeEntry(int databaseID){
+        sqLiteDatabase.execSQL("DELETE FROM TheVoid WHERE ID=" + databaseID);
     }
 }

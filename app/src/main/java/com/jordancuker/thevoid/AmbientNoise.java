@@ -13,8 +13,10 @@ import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
@@ -42,6 +44,26 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
 
+
+
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Ambient Noise");
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_ambient);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view_ambient);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+
+
+
         if(!audioManager.isMusicActive()){
             musicMap = new HashMap<>();
             musicMap.put("fire", MediaPlayer.create(this, R.raw.fire));
@@ -49,7 +71,7 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
             musicMap.put("library", MediaPlayer.create(this, R.raw.library));
             musicMap.put("train", MediaPlayer.create(this, R.raw.train));
             musicMap.put("wind", MediaPlayer.create(this, R.raw.wind));
-            musicMap.put("white", MediaPlayer.create(this, R.raw.white_noise));
+            musicMap.put("cafe", MediaPlayer.create(this, R.raw.cafe));
         }
 
         //handle seekbars
@@ -155,7 +177,7 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 final float vol = calcVol(progress);
-                musicMap.get("white").setVolume(vol,vol);
+                musicMap.get("cafe").setVolume(vol,vol);
             }
 
             @Override
@@ -221,7 +243,7 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
         musicMap.get("ocean").stop();
         musicMap.get("library").stop();
         musicMap.get("wind").stop();
-        musicMap.get("white").stop();
+        musicMap.get("cafe").stop();
     }
 
     @Override
@@ -244,8 +266,8 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
         else musicMap.put("library", MediaPlayer.create(getApplicationContext(), R.raw.library));
         if(musicMap.containsKey("wind") && musicMap.get("wind").isPlaying()) findViewById(R.id.wind_noise).setAlpha(1);
         else musicMap.put("wind", MediaPlayer.create(getApplicationContext(), R.raw.wind));
-        if(musicMap.containsKey("white") && musicMap.get("white").isPlaying()) findViewById(R.id.white_noise).setAlpha(1);
-        else musicMap.put("white", MediaPlayer.create(getApplicationContext(), R.raw.white_noise));
+        if(musicMap.containsKey("cafe") && musicMap.get("cafe").isPlaying()) findViewById(R.id.cafe_noise).setAlpha(1);
+        else musicMap.put("cafe", MediaPlayer.create(getApplicationContext(), R.raw.cafe));
     }
 
     public float calcVol(int progress){
@@ -260,17 +282,28 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
         if (id == R.id.home) {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
-            //overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+            overridePendingTransition(0,0);
         }
         else if(id == R.id.about){
             Intent intent = new Intent(getApplicationContext(), AboutActivity.class);
             startActivity(intent);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_ambient);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_ambient);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 
     public void iconClick(View view){
         switch (view.getId()){
@@ -369,21 +402,21 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
                 }
                 break;
 
-            case R.id.white_noise:
-                if(musicMap.get("white").isPlaying()){
-                    musicMap.get("white").stop();
-                    findViewById(R.id.white_noise).setAlpha(.5f);
+            case R.id.cafe_noise:
+                if(musicMap.get("cafe").isPlaying()){
+                    musicMap.get("cafe").stop();
+                    findViewById(R.id.cafe_noise).setAlpha(.5f);
                     runningAudio--;
                 }
                 else{
-                    musicMap.remove("white");
-                    musicMap.put("white", MediaPlayer.create(this, R.raw.white_noise));
+                    musicMap.remove("cafe");
+                    musicMap.put("cafe", MediaPlayer.create(this, R.raw.cafe));
                     float vol = calcVol(50);
-                    musicMap.get("white").setVolume(vol,vol);
-                    musicMap.get("white").setLooping(true);
-                    musicMap.get("white").start();
+                    musicMap.get("cafe").setVolume(vol,vol);
+                    musicMap.get("cafe").setLooping(true);
+                    musicMap.get("cafe").start();
                     whiteSeek.setProgress(50);
-                    findViewById(R.id.white_noise).setAlpha(1f);
+                    findViewById(R.id.cafe_noise).setAlpha(1f);
                     runningAudio++;
                 }
                 break;

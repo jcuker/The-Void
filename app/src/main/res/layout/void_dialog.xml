@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_blue_grey_800">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/md_white_1000"
+        android:text="What is your current mood?"
+        android:textSize="16sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/smile"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/smile"
+            android:clickable="true"
+            android:onClick="emojiClick"
+            />
+
+        <ImageView
+            android:id="@+id/neutral"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/neutral"
+            android:clickable="true"
+            android:onClick="emojiClick"/>
+
+        <ImageView
+            android:id="@+id/crying"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/crying"
+            android:clickable="true"
+            android:onClick="emojiClick"/>
+
+        <ImageView
+            android:id="@+id/angry"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/angry"
+            android:clickable="true"
+            android:onClick="emojiClick"/>
+
+    </LinearLayout>
+</RelativeLayout>

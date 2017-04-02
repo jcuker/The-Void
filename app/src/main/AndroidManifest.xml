@@ -11,8 +11,8 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="@null"
         >
-        <activity android:name=".VoidComposer"/>
-        <activity android:name=".AmbientNoise"/>
+        <activity android:name=".VoidComposer" android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".AmbientNoise" android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".AboutActivity"/>
         <activity

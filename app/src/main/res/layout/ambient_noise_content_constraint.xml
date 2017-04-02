@@ -131,7 +131,7 @@
         android:alpha=".5"/>
 
     <ImageView
-        android:id="@+id/white_noise"
+        android:id="@+id/cafe_noise"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="0dp"
@@ -142,7 +142,7 @@
         app:layout_constraintLeft_toLeftOf="@+id/library_noise"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/library_seekbar"
-        app:srcCompat="@drawable/ic_white_noise"
+        app:srcCompat="@drawable/ic_java"
         android:clickable="true"
         android:onClick="iconClick"
         android:alpha=".5"
@@ -167,9 +167,9 @@
         android:layout_marginEnd="0dp"
         android:layout_marginTop="0dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/white_noise"
+        app:layout_constraintTop_toBottomOf="@+id/cafe_noise"
         android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="@+id/white_noise" />
+        app:layout_constraintLeft_toLeftOf="@+id/cafe_noise" />
 
 
 </android.support.constraint.ConstraintLayout>
