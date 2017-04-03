@@ -20,6 +20,8 @@ import java.util.Date;
 
 public class VoidComposer extends AppCompatActivity {
 
+    private static final int SWIPE_MIN_DISTANCE = 120;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
     SQLiteDatabase sqLiteDatabase;
     SharedPreferences sharedPreferences;
     int databaseID;
@@ -27,6 +29,7 @@ public class VoidComposer extends AppCompatActivity {
     Dialog dialog;
     ConstraintLayout rootView;
     FloatingActionButton button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +39,7 @@ public class VoidComposer extends AppCompatActivity {
         databaseID = sharedPreferences.getInt("database_id",0);
         newVoid = new Void();
         rootView = (ConstraintLayout) findViewById(R.id.void_composer_root_layout);
-        final GestureDetector gdt = new GestureDetector(new GestureListener());
+        final GestureDetector gdt = new GestureDetector(getApplicationContext(), new GestureListener());
         rootView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -53,6 +56,10 @@ public class VoidComposer extends AppCompatActivity {
         dialog = new Dialog(this, R.style.myDialog);
         dialog.setContentView(R.layout.void_dialog);
         dialog.show();
+    }
+
+    public void backToMain(View view) {
+        backToMain();
     }
 
     public void backToMain(){
@@ -97,10 +104,6 @@ public class VoidComposer extends AppCompatActivity {
                 break;
         }
     }
-
-
-    private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override

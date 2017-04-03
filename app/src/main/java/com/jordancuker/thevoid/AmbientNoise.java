@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -31,11 +32,17 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
     AudioManager audioManager;
     HashMap<String, MediaPlayer> musicMap;
     SeekBar fireSeek, oceanSeek, trainSeek, librarySeek, windSeek, whiteSeek;
-    private int runningAudio = 0; //if > 0, audio is running and notification should be displayed
-
     NotificationCompat.Builder mBuilder;
     IntentFilter filter;
-
+    Thread fire, ocean, train, library, wind, white;
+    private int runningAudio = 0; //if > 0, audio is running and notification should be displayed
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            endAudio();
+            finishAffinity();
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,7 +61,7 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_ambient);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view_ambient);
@@ -216,13 +223,7 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
         mBuilder.setContentText("Tap here to kill the service.");
         mBuilder.setContentIntent(pIntent);
     }
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            endAudio();
-            finishAffinity();
-        }
-    };
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -244,6 +245,7 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
         musicMap.get("library").stop();
         musicMap.get("wind").stop();
         musicMap.get("cafe").stop();
+
     }
 
     @Override
@@ -275,7 +277,7 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -315,12 +317,24 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
                 }
                 else {
                     musicMap.remove("fire");
+                    MediaPlayer mp = new MediaPlayer();
+                    
                     musicMap.put("fire",MediaPlayer.create(getApplicationContext(),R.raw.fire));
                     float vol = calcVol(50);
                     musicMap.get("fire").setVolume(vol,vol);
                     musicMap.get("fire").setLooping(true);
                     fireSeek.setProgress(50);
-                    musicMap.get("fire").start();
+                    if (runningAudio > 1) {
+                        fire = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                musicMap.get("fire").start();
+                            }
+                        });
+                        fire.start();
+
+
+                    } else musicMap.get("fire").start();
                     findViewById(R.id.fire_noise).setAlpha(1f);
                     runningAudio++;
                 }
@@ -339,7 +353,17 @@ public class AmbientNoise extends AppCompatActivity implements NavigationView.On
                     musicMap.get("ocean").setVolume(vol,vol);
                     musicMap.get("ocean").setLooping(true);
                     oceanSeek.setProgress(50);
-                    musicMap.get("ocean").start();
+                    if (runningAudio > 1) {
+                        ocean = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                musicMap.get("ocean").start();
+                            }
+                        });
+                        ocean.start();
+
+
+                    } else musicMap.get("ocean").start();
                     findViewById(R.id.ocean_noise).setAlpha(1f);
                     runningAudio++;
                 }
