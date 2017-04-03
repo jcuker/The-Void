@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -116,11 +117,16 @@ public class VoidComposer extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"Must enter text",Toast.LENGTH_SHORT).show();
                     return false;
                 }
-                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.send_to_void_fab);
+                final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.send_to_void_fab);
                 fab.hide();
-                Toast.makeText(getApplicationContext(),"bottom to top",Toast.LENGTH_LONG).show();
-                button.animate().alphaBy(1f).scaleXBy(100f).scaleYBy(100f).setDuration(500).start();
-                fab.callOnClick();
+                button.animate().alphaBy(1f).scaleXBy(100f).scaleYBy(100f).setDuration(1200).start();
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        fab.callOnClick();
+                    }
+                }, 1200);
                 return false; // Bottom to top
             }  else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
                 return false; // Top to bottom
